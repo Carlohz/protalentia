@@ -212,6 +212,9 @@ async function analizarRespuestas() {
         throw new Error("No hay token disponible. Por favor inicia sesión.");
       }
       
+      // Añadir log detallado
+      console.log("Enviando respuestas a OpenAI:", respuestas);
+      
       // Enviar las respuestas al servidor para análisis con ChatGPT
       const response = await fetch('/.netlify/functions/api-analyze-responses', {
         method: 'POST',
@@ -222,8 +225,12 @@ async function analizarRespuestas() {
         body: JSON.stringify({ responses: respuestas })
       });
       
+      // Añadir log de la respuesta
+      console.log("Respuesta de la API - status:", response.status);
+      
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Error en la respuesta:", errorData);
         
         // Si es un error de OpenAI, mostrar mensaje amigable
         if (errorData.errorCode === 'OPENAI_ERROR') {
@@ -234,29 +241,49 @@ async function analizarRespuestas() {
         }
       }
       
-      // Obtener el análisis detallado de ChatGPT
-      const analisisGPT = await response.json();
+      // Obtener y mostrar la respuesta completa como texto
+      const responseText = await response.text();
+      console.log("Respuesta completa de OpenAI (texto):", responseText);
       
-      // Guardar en localStorage
-      localStorage.setItem("areaLaboral", analisisGPT.areasPrincipales[0]);
-      localStorage.setItem("areasSecundarias", JSON.stringify(analisisGPT.areasPrincipales.slice(1)));
-      localStorage.setItem("perfil", analisisGPT.perfilLaboral);
-      localStorage.setItem("porcentajeEmprendedor", analisisGPT.porcentajeEmprendedor);
-      localStorage.setItem("porcentajeEmpleado", analisisGPT.porcentajeEmpleado);
-      localStorage.setItem("profesionRecomendada", analisisGPT.profesionRecomendada);
-      localStorage.setItem("habilidadesClave", JSON.stringify(analisisGPT.habilidadesClave));
-      localStorage.setItem("consejoPersonalizado", analisisGPT.consejoPersonalizado);
-      
-      // Mostrar resultados personalizados
-      mostrarResultadosPersonalizados(analisisGPT);
-      return; // Terminar aquí si el análisis avanzado fue exitoso
-      
+      try {
+        // Intentar parsear como JSON
+        const analisisGPT = JSON.parse(responseText);
+        console.log("Respuesta parseada:", analisisGPT);
+        
+        // Verificar la estructura esperada
+        if (!analisisGPT.areasPrincipales || !analisisGPT.profesionRecomendada) {
+          console.error("La respuesta no tiene la estructura esperada:", analisisGPT);
+          throw new Error("Formato de respuesta incorrecto");
+        }
+        
+        console.log("Guardando resultados en localStorage...");
+        
+        // Guardar en localStorage
+        localStorage.setItem("areaLaboral", analisisGPT.areasPrincipales[0]);
+        localStorage.setItem("areasSecundarias", JSON.stringify(analisisGPT.areasPrincipales.slice(1)));
+        localStorage.setItem("perfil", analisisGPT.perfilLaboral);
+        localStorage.setItem("porcentajeEmprendedor", analisisGPT.porcentajeEmprendedor);
+        localStorage.setItem("porcentajeEmpleado", analisisGPT.porcentajeEmpleado);
+        localStorage.setItem("profesionRecomendada", analisisGPT.profesionRecomendada);
+        localStorage.setItem("habilidadesClave", JSON.stringify(analisisGPT.habilidadesClave));
+        localStorage.setItem("consejoPersonalizado", analisisGPT.consejoPersonalizado);
+        
+        console.log("Mostrando resultados personalizados...");
+        
+        // Mostrar resultados personalizados
+        mostrarResultadosPersonalizados(analisisGPT);
+        return; // Terminar aquí si el análisis avanzado fue exitoso
+      } catch (parseError) {
+        console.error("Error al parsear la respuesta JSON:", parseError, responseText);
+        throw parseError; // Propagar el error para caer en el análisis tradicional
+      }
     } catch (error) {
       console.warn("No se pudo utilizar el análisis avanzado, usando método tradicional:", error.message);
       // Continuar con el análisis tradicional
     }
     
     // Si llegamos aquí, usaremos el análisis tradicional
+    console.log("Utilizando análisis tradicional...");
     const resultadoAnalisis = analizarAreasLaborales(respuestas, respuestas.objetivo);
     
     // MODIFICACIÓN: Calculamos porcentajes de manera más segura
@@ -269,6 +296,9 @@ async function analizarRespuestas() {
       porcentajeEmprendedor = Math.round((resultadoAnalisis.puntosEmprendedor / totalPuntos) * 100);
       porcentajeEmpleado = 100 - porcentajeEmprendedor;
     }
+    
+    console.log("Resultado del análisis tradicional:", resultadoAnalisis);
+    console.log("Porcentajes calculados - Emprendedor:", porcentajeEmprendedor, "Empleado:", porcentajeEmpleado);
     
     // Guardamos en localStorage para las otras páginas
     localStorage.setItem("areaLaboral", resultadoAnalisis.areaPrincipal);
