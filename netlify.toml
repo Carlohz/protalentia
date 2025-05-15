@@ -9,7 +9,3 @@
 
 [functions]
   node_bundler = "esbuild"
-  
-  [functions.api-analyze-responses]
-    node_bundler = "esbuild"
-    external_node_modules = []
