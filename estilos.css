@@ -1,0 +1,463 @@
+/* estilos.css - Actualizado con mejoras para sesión y diagnóstico */
+
+:root {
+  --color-primario: #2c3e50;
+  --color-secundario: #34495e;
+  --color-acento: #2980b9;
+  --color-fondo: #f4f4f4;
+  --color-texto: #333;
+  --color-blanco: #fff;
+  --color-exito: #27ae60;
+  --color-advertencia: #f39c12;
+  --color-error: #c0392b;
+
+  --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--fuente-principal);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+.contenedor {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  background-color: var(--color-primario);
+  color: var(--color-blanco);
+  padding: 1rem;
+  text-align: center;
+}
+
+nav {
+  background-color: var(--color-secundario);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+nav a {
+  color: var(--color-blanco);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--color-acento);
+}
+
+/* Estilos para sección de usuario en nav */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: absolute;
+  right: 20px;
+}
+
+.username {
+  color: var(--color-blanco);
+  font-weight: bold;
+}
+
+.logout-btn {
+  background-color: var(--color-error);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #b71c1c;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--color-primario);
+}
+
+h1 {
+  font-size: 2rem;
+  color: var(--color-blanco);
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+.login-box, .registro-box {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--color-blanco);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+
+.login-box input,
+.registro-box input,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-acento);
+  box-shadow: 0 0 5px rgba(41, 128, 185, 0.3);
+}
+
+button {
+  background-color: var(--color-primario);
+  color: var(--color-blanco);
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--color-acento);
+  transform: scale(1.05);
+}
+
+.btn-analizar {
+  background-color: var(--color-acento);
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  margin-top: 15px;
+}
+
+.btn-analizar:hover {
+  background-color: #1a6aa1;
+}
+
+/* Estilos para pantalla de bienvenida */
+.welcome-box {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 5px solid var(--color-acento);
+  margin: 20px 0;
+}
+
+.welcome-box h2 {
+  color: var(--color-acento);
+  margin-bottom: 15px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.welcome-btn {
+  display: inline-block;
+  background-color: var(--color-primario);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.welcome-btn:hover {
+  background-color: var(--color-acento);
+  transform: translateY(-2px);
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+  background-color: #eee;
+  margin-top: 2rem;
+}
+
+/* Estilos para mensaje de error/éxito flotante */
+#message-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  animation: fadeInDown 0.5s;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Animaciones para transiciones */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Estilos para preguntas */
+.progreso-test {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.progreso-test .indicador-pregunta {
+  font-weight: bold;
+  color: var(--color-primario);
+}
+
+.pregunta.hidden-question {
+  display: none;
+}
+
+.pregunta:not(.hidden-question) {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mensaje de información */
+.mensaje-info {
+  background-color: #e3f2fd;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 5px solid #1e88e5;
+  margin: 20px 0;
+}
+
+.mensaje-info h3 {
+  color: #1565c0;
+  margin-top: 0;
+}
+
+.mensaje-info a {
+  color: #1565c0;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.mensaje-info a:hover {
+  text-decoration: underline;
+}
+
+/* Mejoras de estilos responsivos */
+@media (max-width: 768px) {
+  .contenedor {
+    padding: 15px;
+  }
+  
+  .login-box, .registro-box {
+    padding: 1.5rem;
+  }
+  
+  nav {
+    gap: 1rem;
+    justify-content: flex-start;
+    padding: 15px;
+  }
+  
+  .user-section {
+    position: static;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .botones-accion {
+    flex-direction: column;
+  }
+  
+  .botones-accion button {
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  .barra-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .barra {
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .welcome-btn {
+    width: 100%;
+  }
+  /* Corrección de clases de contenedor */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Estilos para los banners */
+.banners {
+  margin: 30px 0;
+  background-color: var(--color-primario);
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+  color: white;
+}
+
+.banner-content {
+  padding: 20px;
+}
+
+.banner-content h3 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.banner-content p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.banner-btn {
+  display: inline-block;
+  background-color: white;
+  color: var(--color-primario);
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.banner-btn:hover {
+  background-color: var(--color-acento);
+  color: white;
+  transform: translateY(-3px);
+}
+
+/* Arreglos para la sección de usuario */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Diseño responsive mejorado */
+@media (max-width: 768px) {
+  .banners {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .user-section {
+    position: static;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    width: 100%;
+    transform: none;
+  }
+  
+  nav {
+    position: relative;
+    padding-bottom: 60px;
+  }
+}
+
+/* Arreglar estilos de login */
+.login-box {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+}

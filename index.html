@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>PROTALENTIA</title>
+  <link rel="stylesheet" href="estilos.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Estilos adicionales específicos para esta página */
+    .login-box {
+      max-width: 400px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    
+    .banners {
+      margin: 30px 0;
+      background-color: var(--color-primario);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      color: white;
+    }
+    
+    .banner-content {
+      padding: 20px;
+    }
+    
+    .banner-content h3 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: white;
+    }
+    
+    .banner-content p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+    
+    .banner-btn {
+      display: inline-block;
+      background-color: white;
+      color: var(--color-primario);
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .banner-btn:hover {
+      background-color: var(--color-acento);
+      color: white;
+      transform: translateY(-3px);
+    }
+    
+    .debug-panel {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+<header>PROTALENTIA</header>
+
+<nav>
+  <a href="index.html">Inicio</a>
+  <a href="diagnostico.html">Diagnóstico</a>
+  <a href="cursos.html">Cursos</a>
+  <a href="ofertas.html">Ofertas</a>
+</nav>
+
+<div class="contenedor">
+  <!-- BANNER MEJORADO -->
+  <div class="banners">
+    <div class="banner-content">
+      <h3>Descubre tu camino profesional</h3>
+      <p>Diagnóstico personalizado para tu carrera</p>
+      <a href="diagnostico.html" class="banner-btn">Comenzar</a>
+    </div>
+  </div>
+
+  <div class="login-box" id="loginForm">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="username" placeholder="Usuario" value="">
+    <input type="password" id="password" placeholder="Contraseña" value="">
+    <button type="submit">Ingresar</button>
+    <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+  </div>
+
+  <!-- SEGUNDO BANNER MEJORADO -->
+  <div class="banners">
+    <div class="banner-content" style="background-color: #34495e;"> <!-- Color ligeramente diferente -->
+      <h3>Explora oportunidades</h3>
+      <p>Cursos y ofertas adaptados a tu perfil</p>
+      <a href="cursos.html" class="banner-btn">Ver cursos</a>
+    </div>
+  </div>
+</div>
+
+<!-- Panel de depuración -->
+<div class="debug-panel">
+  <div>Versión: Debug v1.0</div>
+</div>
+
+<footer>
+  Aviso de privacidad - PROTALENTIA 2025
+</footer>
+
+<!-- Añade esta línea antes de cualquier otro script -->
+<script src="netlify-config.js"></script>
+
+<!-- Scripts de depuración y verificación -->
+<script src="server-check.js"></script>
+<script src="debug-login.js"></script>
+<script src="session-manager.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Verificar si hay un token y actualizar la interfaz si es necesario
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      showWelcomeMessage();
+    }
+    
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+      const loginButton = loginForm.querySelector("button");
+      if (loginButton) {
+        loginButton.addEventListener("click", function() {
+          console.log("Botón de login pulsado");
+          const user = document.getElementById("username").value;
+          const pass = document.getElementById("password").value;
+          
+          // Validación básica
+          if (!user || !pass) {
+            showMessage("Por favor completa todos los campos", "error");
+            return;
+          }
+            
+            // Mostrar indicador de carga
+            loginButton.textContent = "Iniciando sesión...";
+            loginButton.disabled = true;
+            
+            // Crear un token falso para testing con el nombre como string
+            const fakeToken = btoa(JSON.stringify({id: 1, username: user}));
+            
+            // Guardar el token en localStorage
+            localStorage.setItem('authToken', fakeToken);
+            
+            // Mostrar mensaje de éxito
+            showMessage("¡Inicio de sesión exitoso!", "success");
+            
+            // Recargar la página después de un breve retraso
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+        });
+      }
+    }
+    
+    // Usar delegación de eventos para el botón de cerrar sesión
+    document.body.addEventListener('click', function(event) {
+      if (event.target && event.target.id === 'logout-btn') {
+        console.log("Cerrar sesión activado");
+        localStorage.removeItem('authToken');
+        showMessage("Has cerrado sesión correctamente", "success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    });
+  });
+  
+  // Función para mostrar el mensaje de bienvenida
+  function showWelcomeMessage() {
+    const loginForm = document.getElementById("loginForm");
+    if (!loginForm) return;
+    
+    // Intentar obtener el nombre de usuario del token
+    let username = "Usuario"; // Valor por defecto
+    
+    try {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        // Decodificar el token (asumiendo que es base64)
+        const userData = JSON.parse(atob(token));
+        if (userData.username) {
+          // Asegurarnos de que username es un string
+          username = String(userData.username);
+        }
+      }
+    } catch (e) {
+      console.error("Error al decodificar el token:", e);
+    }
+    
+    // Actualizar el formulario con mensaje de bienvenida
+    loginForm.innerHTML = `
+      <div class="welcome-box">
+        <h2>¡Bienvenido de nuevo!</h2>
+        <p>Ya has iniciado sesión como <strong>${username}</strong>.</p>
+        <p>Ahora puedes acceder a todas las funciones de PROTALENTIA:</p>
+        <div class="action-buttons">
+          <a href="diagnostico.html" class="welcome-btn">Realizar diagnóstico</a>
+          <a href="cursos.html" class="welcome-btn">Ver cursos</a>
+          <a href="ofertas.html" class="welcome-btn">Explorar ofertas</a>
+        </div>
+        <button id="logout-btn" style="margin-top: 20px; background-color: #f44336; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Cerrar sesión</button>
+      </div>
+    `;
+  }
+  
+  // Asegurarnos de que la función showMessage está disponible
+  if (typeof showMessage !== 'function') {
+    function showMessage(message, type = "info") {
+      // Verificar si ya existe un mensaje
+      let messageContainer = document.getElementById("message-container");
+      
+      if (messageContainer) {
+        messageContainer.remove();
+      }
+      
+      // Crear el contenedor
+      messageContainer = document.createElement("div");
+      messageContainer.id = "message-container";
+      messageContainer.style.position = "fixed";
+      messageContainer.style.top = "20px";
+      messageContainer.style.left = "50%";
+      messageContainer.style.transform = "translateX(-50%)";
+      messageContainer.style.zIndex = "1000";
+      messageContainer.style.padding = "10px 20px";
+      messageContainer.style.borderRadius = "5px";
+      messageContainer.style.fontWeight = "bold";
+      messageContainer.style.boxShadow = "0 2px 10px rgba(0,0,0,0.2)";
+      document.body.appendChild(messageContainer);
+      
+      // Aplicar estilos según el tipo de mensaje
+      if (type === "error") {
+        messageContainer.style.backgroundColor = "#f44336";
+        messageContainer.style.color = "white";
+      } else if (type === "success") {
+        messageContainer.style.backgroundColor = "#4CAF50";
+        messageContainer.style.color = "white";
+      } else {
+        messageContainer.style.backgroundColor = "#2196F3";
+        messageContainer.style.color = "white";
+      }
+      
+      messageContainer.textContent = message;
+      
+      // Hacer visible el mensaje
+      messageContainer.style.display = "block";
+      
+      // Auto-ocultar después de 3 segundos
+      setTimeout(() => {
+        messageContainer.remove();
+      }, 3000);
+    }
+  }
+</script>
+
+
+<script src="auth-manager.js"></script>
+
+</body>
+</html>

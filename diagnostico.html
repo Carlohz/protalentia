@@ -1,0 +1,715 @@
+<!-- diagnostico.html reestructurado con orden de preguntas correcto -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diagnóstico Profesional</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="estilos.css">
+  <style>
+    /* Estilos mejorados para el diagnóstico */
+    .pregunta {
+      margin: 20px 0;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    .hidden-question {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    .pregunta h3 {
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: var(--color-primario);
+    }
+    
+    .opciones {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .opcion {
+      display: flex;
+      align-items: center;
+      background-color: #f8f9fa;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .opcion:hover {
+      background-color: #e9ecef;
+      transform: translateY(-2px);
+      border-color: var(--color-acento);
+    }
+    
+    .opcion input[type="radio"] {
+      margin-right: 12px;
+    }
+    
+    .opcion-texto {
+      flex: 1;
+    }
+    
+    .resultado-container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-top: 30px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .grafico-resultados {
+      margin: 25px 0;
+    }
+    
+    .barra-container {
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .barra-container label {
+      width: 120px;
+      font-weight: bold;
+    }
+    
+    .barra {
+      flex: 1;
+      height: 25px;
+      background-color: #e9ecef;
+      border-radius: 25px;
+      overflow: hidden;
+      margin: 0 15px;
+    }
+    
+    .barra-valor {
+      height: 100%;
+      background-color: var(--color-acento);
+      border-radius: 25px;
+      animation: barraAnimate 1.5s ease-out;
+    }
+    
+    @keyframes barraAnimate {
+      from { width: 0%; }
+    }
+    
+    .botones-accion {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 25px;
+    }
+    
+    .recomendacion {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-left: 5px solid var(--color-acento);
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .recomendacion ul {
+      padding-left: 20px;
+    }
+    
+    .recomendacion li {
+      margin: 8px 0;
+    }
+    
+    .navegacion-preguntas {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .anterior-btn, .siguiente-btn {
+      padding: 8px 15px;
+      background-color: var(--color-primario);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .anterior-btn:hover, .siguiente-btn:hover {
+      background-color: var(--color-acento);
+    }
+    
+    .anterior-btn {
+      background-color: #6c757d;
+    }
+    
+    .siguiente-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .barra-progreso-container {
+      width: 100%;
+      height: 10px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    
+    .barra-progreso-valor {
+      height: 100%;
+      background-color: var(--color-acento);
+      transition: width 0.3s ease;
+    }
+    
+    .respuesta-abierta {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: var(--fuente-principal);
+      min-height: 100px;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+    
+    .respuesta-abierta:focus {
+      border-color: var(--color-acento);
+      outline: none;
+      box-shadow: 0 0 5px rgba(41, 128, 185, 0.3);
+    }
+    
+    .rango-container {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
+    
+    .rango-input {
+      flex: 1;
+      height: 5px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #ddd;
+      border-radius: 5px;
+      outline: none;
+    }
+    
+    .rango-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--color-acento);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .rango-input::-webkit-slider-thumb:hover {
+      background: var(--color-primario);
+    }
+    
+    .rango-valor {
+      margin-left: 15px;
+      font-weight: bold;
+      min-width: 30px;
+      text-align: center;
+    }
+    
+    .cargando {
+      text-align: center;
+      padding: 30px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top-color: var(--color-acento);
+      animation: spin 1s ease-in-out infinite;
+      margin: 20px 0;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .mensaje-personalizado {
+      background-color: #e1f5fe;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-left: 5px solid #03a9f4;
+    }
+    
+    .error-container {
+      background-color: #ffebee;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 5px solid #f44336;
+      text-align: center;
+    }
+    
+    .error-container button {
+      margin-top: 15px;
+      background-color: #f44336;
+    }
+    
+    .error-container button:hover {
+      background-color: #d32f2f;
+    }
+    
+    /* Ajustes responsive */
+    @media (max-width: 768px) {
+      .navegacion-preguntas {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .anterior-btn, .siguiente-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Diagnóstico Laboral</h1>
+</header>
+
+<nav>
+  <a href="index.html">Inicio</a>
+  <a href="diagnostico.html">Diagnóstico</a>
+  <a href="cursos.html">Cursos</a>
+  <a href="ofertas.html">Ofertas</a>
+</nav>
+
+<main>
+  <div class="contenedor">
+    <h2>Descubre tu perfil profesional ideal</h2>
+    <p>Responde las siguientes preguntas para recibir recomendaciones personalizadas sobre cursos y ofertas laborales que se ajusten a tus habilidades e intereses.</p>
+    
+    <div class="progreso-test">
+      <span class="indicador-pregunta">Pregunta <span id="preguntaActual">1</span> de 15</span>
+      <span>Progreso: <span id="porcentajeProgreso">0</span>%</span>
+      <div class="barra-progreso-container">
+        <div class="barra-progreso-valor" style="width: 0%"></div>
+      </div>
+    </div>
+    
+    <form id="diagnosticoForm">
+      <!-- Pregunta Objetivo -->
+      <div class="pregunta" id="pregunta-objetivo" data-question-number="1">
+        <h3>¿Cuál es tu objetivo profesional principal?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="objetivo" value="empleo_estable" required>
+            <span class="opcion-texto">Conseguir un empleo estable en una empresa</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="objetivo" value="crecimiento_profesional">
+            <span class="opcion-texto">Crecer profesionalmente y ascender en mi carrera</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="objetivo" value="negocio_propio">
+            <span class="opcion-texto">Iniciar mi propio negocio o emprendimiento</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="objetivo" value="freelance">
+            <span class="opcion-texto">Trabajar de forma independiente como freelance</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="siguiente-btn" disabled>Siguiente pregunta</button>
+        </div>
+      </div>
+
+      <!-- Pregunta 1 -->
+      <div class="pregunta hidden-question" data-question-number="2">
+        <h3>1. ¿Qué habilidades consideras que son tus puntos fuertes?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta1" value="tecnicas">
+            <span class="opcion-texto">Habilidades técnicas y analíticas</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta1" value="creativas">
+            <span class="opcion-texto">Creatividad e innovación</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta1" value="comunicacion">
+            <span class="opcion-texto">Comunicación y relaciones interpersonales</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta1" value="liderazgo">
+            <span class="opcion-texto">Liderazgo y toma de decisiones</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Pregunta 2 -->
+      <div class="pregunta hidden-question" data-question-number="3">
+        <h3>2. ¿Cómo prefieres resolver problemas laborales?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta2" value="metodico">
+            <span class="opcion-texto">De forma metódica y estructurada, siguiendo procesos establecidos</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta2" value="creativo">
+            <span class="opcion-texto">Con enfoques creativos e innovadores, buscando nuevas soluciones</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta2" value="colaborativo">
+            <span class="opcion-texto">Colaborando con un equipo, discutiendo diferentes perspectivas</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta2" value="autonomo">
+            <span class="opcion-texto">De forma autónoma, confiando en mi propio criterio</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Pregunta 3 -->
+      <div class="pregunta hidden-question" data-question-number="4">
+        <h3>3. ¿Qué tipo de ambiente laboral prefieres?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta3" value="estructurado">
+            <span class="opcion-texto">Estructurado y estable, con procesos bien definidos</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta3" value="dinamico">
+            <span class="opcion-texto">Dinámico y cambiante, con nuevos desafíos constantemente</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta3" value="colaborativo">
+            <span class="opcion-texto">Colaborativo, con trabajo en equipo y buena comunicación</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta3" value="independiente">
+            <span class="opcion-texto">Independiente, con libertad para gestionar mi tiempo y tareas</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Pregunta 4 -->
+      <div class="pregunta hidden-question" data-question-number="5">
+        <h3>4. ¿Cómo te mantienes actualizado profesionalmente?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta4" value="cursos">
+            <span class="opcion-texto">Tomando cursos y certificaciones formales</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta4" value="autoaprendizaje">
+            <span class="opcion-texto">Aprendiendo por mi cuenta a través de recursos online</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta4" value="practica">
+            <span class="opcion-texto">Practicando y experimentando con nuevas técnicas</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta4" value="networking">
+            <span class="opcion-texto">Participando en eventos y conectando con profesionales</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Pregunta 5 -->
+      <div class="pregunta hidden-question" data-question-number="6">
+        <h3>5. ¿Qué aspecto del trabajo consideras tu mayor logro?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta5" value="resultados">
+            <span class="opcion-texto">Alcanzar resultados y objetivos medibles</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta5" value="innovacion">
+            <span class="opcion-texto">Proponer ideas innovadoras que generen impacto</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta5" value="equipos">
+            <span class="opcion-texto">Formar y desarrollar equipos efectivos</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta5" value="aprendizaje">
+            <span class="opcion-texto">Adquirir nuevos conocimientos y habilidades</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Preguntas 6 a 10 - Continúan la numeración -->
+      <div class="pregunta hidden-question" data-question-number="7">
+        <h3>6. Respecto al liderazgo, ¿qué afirmación te describe mejor?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta6" value="seguidor">
+            <span class="opcion-texto">Prefiero seguir instrucciones claras y ejecutar eficientemente</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta6" value="lider">
+            <span class="opcion-texto">Me gusta liderar equipos y tomar decisiones importantes</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta6" value="colaborativo">
+            <span class="opcion-texto">Disfruto colaborando y aportando ideas en un entorno participativo</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta6" value="autonomo">
+            <span class="opcion-texto">Prefiero trabajar de manera autónoma, tomando mis propias decisiones</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <div class="pregunta hidden-question" data-question-number="8">
+        <h3>7. Ante un nuevo desafío laboral, ¿cuál es tu enfoque?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta7" value="planificacion">
+            <span class="opcion-texto">Planificar detalladamente antes de actuar</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta7" value="exploracion">
+            <span class="opcion-texto">Explorar diferentes enfoques y experimentar</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta7" value="consulta">
+            <span class="opcion-texto">Consultar con expertos y buscar asesoramiento</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta7" value="iniciativa">
+            <span class="opcion-texto">Tomar la iniciativa rápidamente y ajustar sobre la marcha</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <div class="pregunta hidden-question" data-question-number="9">
+        <h3>8. ¿Qué valoras más en un trabajo?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta8" value="estabilidad">
+            <span class="opcion-texto">Estabilidad y seguridad económica</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta8" value="crecimiento">
+            <span class="opcion-texto">Oportunidades de crecimiento y aprendizaje</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta8" value="impacto">
+            <span class="opcion-texto">Generar impacto y contribuir significativamente</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta8" value="libertad">
+            <span class="opcion-texto">Libertad y flexibilidad en la forma de trabajar</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <div class="pregunta hidden-question" data-question-number="10">
+        <h3>9. ¿Cómo te describirían profesionalmente?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta9" value="confiable">
+            <span class="opcion-texto">Confiable y metódico, cumple siempre con lo encomendado</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta9" value="innovador">
+            <span class="opcion-texto">Innovador y creativo, siempre con nuevas ideas</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta9" value="colaborador">
+            <span class="opcion-texto">Colaborador y empático, excelente trabajando en equipo</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta9" value="resolutivo">
+            <span class="opcion-texto">Resolutivo y práctico, orientado a resultados</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <div class="pregunta hidden-question" data-question-number="11">
+        <h3>10. ¿Qué te motiva profesionalmente?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta10" value="logros">
+            <span class="opcion-texto">Alcanzar logros y recibir reconocimiento</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta10" value="retos">
+            <span class="opcion-texto">Enfrentar retos y resolver problemas complejos</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta10" value="personas">
+            <span class="opcion-texto">Ayudar a otras personas y trabajar en equipo</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta10" value="autonomia">
+            <span class="opcion-texto">Tener autonomía y desarrollar mis propias ideas</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Preguntas específicas de áreas laborales -->
+      <div class="pregunta hidden-question" data-question-number="12">
+        <h3>11. ¿Qué tipo de actividades disfrutas más?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta11" value="tecnologia">
+            <span class="opcion-texto">Trabajar con tecnología, programación o sistemas</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta11" value="creatividad">
+            <span class="opcion-texto">Crear, diseñar o desarrollar contenido visual</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta11" value="personas">
+            <span class="opcion-texto">Interactuar, enseñar o ayudar a otras personas</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta11" value="analitico">
+            <span class="opcion-texto">Analizar datos, investigar o resolver problemas complejos</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <div class="pregunta hidden-question" data-question-number="13">
+        <h3>12. ¿Qué valor es más importante para ti en tu profesión?</h3>
+        <div class="opciones">
+          <label class="opcion">
+            <input type="radio" name="pregunta12" value="ayudar">
+            <span class="opcion-texto">Ayudar a otros y contribuir al bienestar social</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta12" value="innovar">
+            <span class="opcion-texto">Innovar y estar a la vanguardia de los avances</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta12" value="estabilidad">
+            <span class="opcion-texto">Tener estabilidad y una trayectoria predecible</span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="pregunta12" value="libertad">
+            <span class="opcion-texto">Tener libertad creativa y flexibilidad</span>
+          </label>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn" disabled>Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Pregunta 13 (texto abierto) -->
+      <div class="pregunta hidden-question" data-question-number="14">
+        <h3>13. ¿Qué te apasiona hacer en tu tiempo libre y cómo crees que podría relacionarse con tu carrera profesional?</h3>
+        <textarea class="respuesta-abierta" name="respuestaAbierta1" rows="4" 
+          placeholder="Describe con tus propias palabras..."></textarea>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn">Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Pregunta 14 (rango) -->
+      <div class="pregunta hidden-question" data-question-number="15">
+        <h3>14. En una escala del 1 al 10, ¿cuánto valoras la estabilidad laboral frente a la libertad de horarios?</h3>
+        <p>1 = Valoro completamente la estabilidad | 10 = Valoro completamente la libertad</p>
+        <div class="rango-container">
+          <input type="range" min="1" max="10" value="5" class="rango-input" name="rangoEstabilidad" id="rangoEstabilidad">
+          <span class="rango-valor">5</span>
+        </div>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="button" class="siguiente-btn">Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Última pregunta con botón de envío -->
+      <div class="pregunta hidden-question" data-question-number="16">
+        <h3>15. ¿Qué esperas lograr en los próximos 5 años de tu carrera profesional?</h3>
+        <textarea class="respuesta-abierta" name="respuestaAbierta2" rows="4" 
+          placeholder="Describe tus metas profesionales..."></textarea>
+        <div class="navegacion-preguntas">
+          <button type="button" class="anterior-btn">Anterior</button>
+          <button type="submit" class="btn-analizar">Analizar mis respuestas</button>
+        </div>
+      </div>
+    </form>
+    
+    <div id="resultado"></div>
+  </div>
+</main>
+
+<!-- Añade esta línea antes de cualquier otro script -->
+<script src="netlify-config.js"></script>
+<script src="diagnostico.js"></script>
+<script src="session-manager.js"></script>
+</body>
+</html>

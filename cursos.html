@@ -1,0 +1,690 @@
+<!-- cursos.html mejorado -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursos Recomendados</title>
+  <link rel="stylesheet" href="estilos.css">
+  <style>
+    .cursos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .curso-card {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+    
+    .curso-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    .curso-header {
+      background-color: var(--color-primario);
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .curso-header h3 {
+      margin: 0;
+      color: white;
+    }
+    
+    .curso-body {
+      padding: 20px;
+    }
+    
+    .curso-body ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 15px 0;
+    }
+    
+    .curso-body li {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+    
+    .curso-body button {
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    
+    .tag {
+      background-color: #e1f5fe;
+      color: #0277bd;
+      padding: 3px 8px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+    }
+    
+    .perfil-info {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .nivel-curso {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 5px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .basico {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .intermedio {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+    
+    .avanzado {
+      background-color: #e8eaf6;
+      color: #3949ab;
+    }
+    
+    .plataforma {
+      display: block;
+      color: #757575;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+    
+    .curso-relevancia {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ffd700;
+      color: #333;
+      padding: 3px 8px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .recomendacion-personalizada {
+      background-color: #e3f2fd;
+      border-left: 5px solid #1e88e5;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .habilidades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    
+    .habilidad-tag {
+      background-color: #dcedc8;
+      color: #558b2f;
+      padding: 5px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+    }
+    
+    .subtitulo {
+      font-size: 1.1rem;
+      color: #455a64;
+      margin: 15px 0 5px 0;
+    }
+    
+    .cursos-categoria {
+      margin-bottom: 40px;
+    }
+    
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+    }
+    
+    .filtro-btn {
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 8px 15px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filtro-btn:hover, .filtro-btn.activo {
+      background-color: var(--color-acento);
+      color: white;
+      border-color: var(--color-acento);
+    }
+    
+    .mensaje-info {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 5px solid #1e88e5;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="diagnostico.html">Diagnóstico</a>
+    <a href="cursos.html">Cursos</a>
+    <a href="ofertas.html">Ofertas</a>
+  </nav>
+
+  <main>
+    <div class="contenedor">
+      <h1>Cursos recomendados para tu perfil</h1>
+      
+      <div id="perfil-info" class="perfil-info">
+        <!-- Aquí se mostrará la información del perfil -->
+      </div>
+      
+      <div class="filtros">
+        <button class="filtro-btn activo" data-filtro="todos">Todos los cursos</button>
+        <button class="filtro-btn" data-filtro="profesion">Mi profesión ideal</button>
+        <button class="filtro-btn" data-filtro="habilidades">Habilidades clave</button>
+        <button class="filtro-btn" data-filtro="gratuitos">Cursos gratuitos</button>
+      </div>
+      
+      <div id="cursos-recomendados" class="cursos-container">
+        <!-- Aquí irán los cursos recomendados específicamente para la profesión -->
+      </div>
+      
+      <div id="cursos-area-principal" class="cursos-categoria">
+        <!-- Aquí irán los cursos del área principal -->
+      </div>
+      
+      <div id="cursos-habilidades" class="cursos-categoria">
+        <!-- Aquí irán los cursos para desarrollar habilidades clave -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Añade esta línea antes de cualquier otro script -->
+  <script src="netlify-config.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Recuperamos datos del localStorage
+      const perfil = localStorage.getItem("perfil") || "No definido";
+      const porcentajeEmprendedor = localStorage.getItem("porcentajeEmprendedor") || "0";
+      const porcentajeEmpleado = localStorage.getItem("porcentajeEmpleado") || "0";
+      const areaLaboral = localStorage.getItem("areaLaboral") || "No definido";
+      const profesionRecomendada = localStorage.getItem("profesionRecomendada") || "No definido";
+      const habilidadesClave = JSON.parse(localStorage.getItem("habilidadesClave") || "[]");
+      const areasSecundarias = JSON.parse(localStorage.getItem("areasSecundarias") || "[]");
+      
+      // Mostramos información del perfil
+      const perfilInfoDiv = document.getElementById("perfil-info");
+      perfilInfoDiv.innerHTML = `
+        <h3>Tu perfil profesional: ${profesionRecomendada}</h3>
+        <p>Área principal: <strong>${areaLaboral}</strong></p>
+        
+        <div class="subtitulo">Orientación profesional:</div>
+        <div class="grafico-resultados">
+          <div class="barra-container">
+            <label>Emprendedor</label>
+            <div class="barra">
+              <div class="barra-valor" style="width: ${porcentajeEmprendedor}%"></div>
+            </div>
+            <span>${porcentajeEmprendedor}%</span>
+          </div>
+          
+          <div class="barra-container">
+            <label>Empleado</label>
+            <div class="barra">
+              <div class="barra-valor" style="width: ${porcentajeEmpleado}%"></div>
+            </div>
+            <span>${porcentajeEmpleado}%</span>
+          </div>
+        </div>
+        
+        <div class="subtitulo">Habilidades a desarrollar:</div>
+        <div class="habilidades">
+          ${habilidadesClave.map(habilidad => `<span class="habilidad-tag">${habilidad}</span>`).join('')}
+        </div>
+      `;
+      
+      // Base de datos de cursos por área y profesión
+      const cursos = {
+        "Tecnología y Programación": [
+          {
+            titulo: "Fundamentos de Programación",
+            descripcion: "Aprende los conceptos básicos de programación aplicables a cualquier lenguaje.",
+            nivel: "basico",
+            duracion: "6 semanas",
+            plataforma: "Udemy",
+            precio: "Gratuito",
+            tags: ["programación", "algoritmos", "lógica"],
+            habilidades: ["Pensamiento crítico", "Resolución de problemas"]
+          },
+          {
+            titulo: "Desarrollo Web Full-Stack",
+            descripcion: "Domina HTML, CSS, JavaScript y frameworks modernos para construir aplicaciones web completas.",
+            nivel: "intermedio",
+            duracion: "12 semanas",
+            plataforma: "Coursera",
+            precio: "$49.99/mes",
+            tags: ["desarrollo web", "javascript", "HTML/CSS"],
+            habilidades: ["Habilidades técnicas", "Creatividad"]
+          },
+          {
+            titulo: "Especialización en Ciberseguridad",
+            descripcion: "Aprende a proteger sistemas y redes contra amenazas digitales.",
+            nivel: "avanzado",
+            duracion: "8 semanas",
+            plataforma: "edX",
+            precio: "$199",
+            tags: ["seguridad", "redes", "hacking ético"],
+            habilidades: ["Análisis y resolución de problemas", "Pensamiento crítico"]
+          }
+        ],
+        "Desarrollo de Software": [
+          {
+            titulo: "Arquitectura de Software",
+            descripcion: "Aprende los principios de diseño y patrones para crear sistemas escalables y mantenibles.",
+            nivel: "avanzado",
+            duracion: "10 semanas",
+            plataforma: "Pluralsight",
+            precio: "$29/mes",
+            tags: ["arquitectura", "patrones de diseño", "principios SOLID"],
+            habilidades: ["Análisis y resolución de problemas", "Pensamiento crítico"]
+          },
+          {
+            titulo: "Python para Ciencia de Datos",
+            descripcion: "Domina el uso de Python para análisis de datos, visualización y machine learning.",
+            nivel: "intermedio",
+            duracion: "8 semanas",
+            plataforma: "DataCamp",
+            precio: "$25/mes",
+            tags: ["python", "análisis de datos", "visualización"],
+            habilidades: ["Habilidades técnicas", "Análisis y resolución de problemas"]
+          }
+        ],
+        "Diseño y Artes": [
+          {
+            titulo: "Fundamentos del Diseño Gráfico",
+            descripcion: "Aprende los principios básicos de composición, color y tipografía.",
+            nivel: "basico",
+            duracion: "4 semanas",
+            plataforma: "Domestika",
+            precio: "$12.99",
+            tags: ["diseño", "color", "composición"],
+            habilidades: ["Creatividad", "Atención al detalle"]
+          },
+          {
+            titulo: "Diseño UX/UI Avanzado",
+            descripcion: "Aprende a crear interfaces intuitivas y experiencias de usuario efectivas.",
+            nivel: "avanzado",
+            duracion: "10 semanas",
+            plataforma: "Interaction Design Foundation",
+            precio: "$15/mes",
+            tags: ["UX/UI", "diseño de interfaz", "prototipado"],
+            habilidades: ["Creatividad", "Empatía"]
+          }
+        ],
+        "Marketing y Ventas": [
+          {
+            titulo: "Marketing Digital Completo",
+            descripcion: "Domina las estrategias y herramientas de marketing online actuales.",
+            nivel: "intermedio",
+            duracion: "8 semanas",
+            plataforma: "Google Activate",
+            precio: "Gratuito",
+            tags: ["marketing digital", "SEO", "redes sociales"],
+            habilidades: ["Comunicación", "Análisis y resolución de problemas"]
+          },
+          {
+            titulo: "Técnicas Avanzadas de Venta",
+            descripcion: "Aprende estrategias efectivas para cerrar ventas y manejar objeciones.",
+            nivel: "intermedio",
+            duracion: "6 semanas",
+            plataforma: "LinkedIn Learning",
+            precio: "$29.99/mes",
+            tags: ["ventas", "negociación", "persuasión"],
+            habilidades: ["Comunicación", "Negociación"]
+          }
+        ],
+        "Finanzas y Contabilidad": [
+          {
+            titulo: "Fundamentos de Contabilidad",
+            descripcion: "Aprende los principios básicos de la contabilidad y finanzas.",
+            nivel: "basico",
+            duracion: "6 semanas",
+            plataforma: "Khan Academy",
+            precio: "Gratuito",
+            tags: ["contabilidad", "finanzas", "principios contables"],
+            habilidades: ["Análisis y resolución de problemas", "Organización"]
+          },
+          {
+            titulo: "Análisis Financiero para Empresas",
+            descripcion: "Aprende a analizar informes financieros y tomar decisiones estratégicas.",
+            nivel: "avanzado",
+            duracion: "8 semanas",
+            plataforma: "Coursera",
+            precio: "$49/mes",
+            tags: ["análisis financiero", "valoración", "inversiones"],
+            habilidades: ["Análisis y resolución de problemas", "Pensamiento crítico"]
+          }
+        ],
+        "Recursos Humanos": [
+          {
+            titulo: "Gestión del Talento Humano",
+            descripcion: "Aprende estrategias modernas para atraer, desarrollar y retener talento.",
+            nivel: "intermedio",
+            duracion: "6 semanas",
+            plataforma: "edX",
+            precio: "$149",
+            tags: ["RRHH", "gestión de talento", "desarrollo organizacional"],
+            habilidades: ["Comunicación", "Empatía"]
+          },
+          {
+            titulo: "Técnicas de Selección de Personal",
+            descripcion: "Domina el proceso de reclutamiento y selección de candidatos ideales.",
+            nivel: "intermedio",
+            duracion: "4 semanas",
+            plataforma: "Udemy",
+            precio: "$14.99",
+            tags: ["reclutamiento", "entrevistas", "evaluación"],
+            habilidades: ["Comunicación", "Análisis y resolución de problemas"]
+          }
+        ]
+        // Otras áreas...
+      };
+      
+      // Cursos específicos por habilidad
+      const cursosHabilidades = {
+        "Análisis y resolución de problemas": [
+          {
+            titulo: "Pensamiento Crítico y Resolución de Problemas",
+            descripcion: "Desarrolla habilidades para analizar situaciones complejas y encontrar soluciones efectivas.",
+            nivel: "intermedio",
+            duracion: "4 semanas",
+            plataforma: "Coursera",
+            precio: "Gratuito",
+            tags: ["pensamiento crítico", "resolución de problemas", "análisis"]
+          }
+        ],
+        "Comunicación": [
+          {
+            titulo: "Comunicación Efectiva en el Entorno Laboral",
+            descripcion: "Mejora tus habilidades para comunicarte claramente en cualquier situación profesional.",
+            nivel: "basico",
+            duracion: "3 semanas",
+            plataforma: "LinkedIn Learning",
+            precio: "Incluido con suscripción",
+            tags: ["comunicación", "presentaciones", "persuasión"]
+          }
+        ],
+        "Liderazgo": [
+          {
+            titulo: "Liderazgo y Gestión de Equipos",
+            descripcion: "Aprende a motivar, inspirar y dirigir equipos hacia objetivos comunes.",
+            nivel: "intermedio",
+            duracion: "6 semanas",
+            plataforma: "edX",
+            precio: "$99",
+            tags: ["liderazgo", "gestión", "motivación"]
+          }
+        ],
+        "Creatividad": [
+          {
+            titulo: "Técnicas de Creatividad e Innovación",
+            descripcion: "Potencia tu capacidad creativa con métodos probados para generar ideas innovadoras.",
+            nivel: "basico",
+            duracion: "4 semanas",
+            plataforma: "Domestika",
+            precio: "$9.99",
+            tags: ["creatividad", "innovación", "design thinking"]
+          }
+        ]
+        // Otras habilidades...
+      };
+      
+      // Cursos específicos por profesión (algunos ejemplos)
+      const cursosProfesion = {
+        "Desarrollador Full-Stack": [
+          {
+            titulo: "Bootcamp Desarrollo Web Full-Stack",
+            descripcion: "Formación intensiva para convertirte en desarrollador web con MongoDB, Express, React y Node.js.",
+            nivel: "intermedio",
+            duracion: "12 semanas",
+            plataforma: "Udemy",
+            precio: "$19.99",
+            tags: ["MERN stack", "javascript", "desarrollo web"],
+            relevancia: "Altamente recomendado"
+          }
+        ],
+        "Diseñador UX/UI": [
+          {
+            titulo: "Máster en Diseño UX/UI",
+            descripcion: "Aprende a diseñar experiencias digitales centradas en el usuario que cautiven y conviertan.",
+            nivel: "avanzado",
+            duracion: "16 semanas",
+            plataforma: "Coursera",
+            precio: "$39/mes",
+            tags: ["diseño UX", "interfaces", "investigación de usuarios"],
+            relevancia: "Altamente recomendado"
+          }
+        ],
+        "Especialista en Marketing Digital": [
+          {
+            titulo: "Certificación en Marketing Digital",
+            descripcion: "Programa completo para dominar todas las áreas del marketing online actual.",
+            nivel: "intermedio",
+            duracion: "8 semanas",
+            plataforma: "Google Digital Garage",
+            precio: "Gratuito",
+            tags: ["marketing digital", "certificación", "estrategia digital"],
+            relevancia: "Altamente recomendado"
+          }
+        ]
+        // Otras profesiones...
+      };
+      
+      // Función para generar un curso en HTML
+      function generarCursoHTML(curso, relevancia = null) {
+        return `
+          <div class="curso-card">
+            ${relevancia ? `<span class="curso-relevancia">${relevancia}</span>` : ''}
+            <div class="curso-header">
+              <h3>${curso.titulo} <span class="nivel-curso ${curso.nivel}">${curso.nivel}</span></h3>
+            </div>
+            <div class="curso-body">
+              <p>${curso.descripcion}</p>
+              <span class="plataforma">Plataforma: ${curso.plataforma}</span>
+              
+              <div class="tags-container">
+                ${curso.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+              </div>
+              
+              <ul>
+                <li><strong>Duración:</strong> ${curso.duracion}</li>
+                <li><strong>Precio:</strong> ${curso.precio}</li>
+              </ul>
+              <button>Ver detalles</button>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Función para mostrar los cursos según el perfil
+      const mostrarCursos = () => {
+        // Si no hay perfil definido, mostrar mensaje
+        if (perfil === "No definido" || areaLaboral === "No definido") {
+          document.getElementById("perfil-info").innerHTML = `
+            <div class="mensaje-info">
+              <h3>Aún no has realizado el diagnóstico</h3>
+              <p>Para recibir recomendaciones personalizadas, te invitamos a completar el <a href="diagnostico.html">diagnóstico laboral</a>.</p>
+            </div>
+          `;
+          
+          document.getElementById("cursos-recomendados").innerHTML = `
+            <h2>Cursos Populares</h2>
+            <div class="cursos-grid">
+              <div class="curso-card">
+                <div class="curso-header">
+                  <h3>Fundamentos de Desarrollo Profesional</h3>
+                </div>
+                <div class="curso-body">
+                  <p>Curso básico para orientar tu carrera profesional y descubrir tu potencial.</p>
+                  <button>Ver detalles</button>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          return;
+        }
+        
+        // 1. Cursos recomendados para la profesión específica
+        const cursosRecomendadosDiv = document.getElementById("cursos-recomendados");
+        let htmlCursosRecomendados = `
+          <div class="recomendacion-personalizada">
+            <h3>🎯 Ruta de formación personalizada para: ${profesionRecomendada}</h3>
+            <p>Estos cursos están especialmente seleccionados para ayudarte a desarrollarte como ${profesionRecomendada}.</p>
+          </div>
+          
+          <div class="cursos-grid">
+        `;
+        
+        // Verificamos si existen cursos específicos para la profesión recomendada
+        if (cursosProfesion[profesionRecomendada]) {
+          cursosProfesion[profesionRecomendada].forEach(curso => {
+            htmlCursosRecomendados += generarCursoHTML(curso, curso.relevancia);
+          });
+        } else {
+          // Si no hay cursos específicos para la profesión, mostramos un mensaje
+          htmlCursosRecomendados += `
+            <div class="mensaje-info" style="grid-column: 1/-1;">
+              <h3>No tenemos cursos específicos para ${profesionRecomendada} aún</h3>
+              <p>Pero hemos seleccionado los mejores cursos de ${areaLaboral} que te ayudarán en tu carrera.</p>
+            </div>
+          `;
+        }
+        
+        htmlCursosRecomendados += `</div>`;
+        cursosRecomendadosDiv.innerHTML = `<h2>Cursos recomendados para tu profesión ideal</h2>${htmlCursosRecomendados}`;
+        
+        // 2. Cursos del área principal
+        const cursosAreaDiv = document.getElementById("cursos-area-principal");
+        let htmlCursosArea = `<div class="cursos-grid">`;
+        
+        if (cursos[areaLaboral]) {
+          cursos[areaLaboral].forEach(curso => {
+            htmlCursosArea += generarCursoHTML(curso);
+          });
+        } else {
+          // Mostrar mensaja si no hay cursos específicos para el área
+          htmlCursosArea += `
+            <div class="mensaje-info" style="grid-column: 1/-1;">
+              <p>Estamos trabajando en nuevos cursos para esta área.</p>
+            </div>
+          `;
+        }
+        
+        htmlCursosArea += `</div>`;
+        cursosAreaDiv.innerHTML = `<h2>Cursos de ${areaLaboral}</h2>${htmlCursosArea}`;
+        
+        // 3. Cursos para desarrollar habilidades clave
+        const cursosHabilidadesDiv = document.getElementById("cursos-habilidades");
+        let htmlCursosHabilidades = `
+          <p>Estos cursos te ayudarán a desarrollar las habilidades más importantes para tu perfil profesional.</p>
+          <div class="cursos-grid">
+        `;
+        
+        // Mostrar cursos para las primeras 2 habilidades clave
+        let cursosAgregados = 0;
+        
+        habilidadesClave.slice(0, 3).forEach(habilidad => {
+          if (cursosHabilidades[habilidad]) {
+            cursosHabilidades[habilidad].forEach(curso => {
+              htmlCursosHabilidades += generarCursoHTML(curso);
+              cursosAgregados++;
+            });
+          }
+        });
+        
+        if (cursosAgregados === 0) {
+          htmlCursosHabilidades += `
+            <div class="mensaje-info" style="grid-column: 1/-1;">
+              <p>Estamos trabajando en cursos específicos para desarrollar tus habilidades clave.</p>
+            </div>
+          `;
+        }
+        
+        htmlCursosHabilidades += `</div>`;
+        cursosHabilidadesDiv.innerHTML = `<h2>Cursos para desarrollar tus habilidades clave</h2>${htmlCursosHabilidades}`;
+        
+        // Establecer funcionalidad para los filtros
+        document.querySelectorAll('.filtro-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+            
+            const filtro = btn.getAttribute('data-filtro');
+            
+            switch(filtro) {
+              case 'todos':
+                document.getElementById('cursos-recomendados').style.display = 'block';
+                document.getElementById('cursos-area-principal').style.display = 'block';
+                document.getElementById('cursos-habilidades').style.display = 'block';
+                break;
+              case 'profesion':
+                document.getElementById('cursos-recomendados').style.display = 'block';
+                document.getElementById('cursos-area-principal').style.display = 'none';
+                document.getElementById('cursos-habilidades').style.display = 'none';
+                break;
+              case 'habilidades':
+                document.getElementById('cursos-recomendados').style.display = 'none';
+                document.getElementById('cursos-area-principal').style.display = 'none';
+                document.getElementById('cursos-habilidades').style.display = 'block';
+                break;
+              case 'gratuitos':
+                // Filtrar solo cursos gratuitos (se implementaría con más tiempo)
+                break;
+            }
+          });
+        });
+      };
+      
+      // Mostrar los cursos
+      mostrarCursos();
+    });
+  </script>
+
+ <script src="profile-verification.js"></script>
+ <script src="auth-content-guard.js"></script>
+
+</body>
+</html>

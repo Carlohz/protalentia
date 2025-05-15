@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro - PROTALENTIA</title>
+  <link rel="stylesheet" href="estilos.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .registro-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: var(--color-primario);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--color-acento);
+      box-shadow: 0 0 5px rgba(41, 128, 185, 0.3);
+    }
+    
+    .btn-registro {
+      background-color: var(--color-acento);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      width: 100%;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    
+    .btn-registro:hover {
+      background-color: var(--color-primario);
+      transform: translateY(-2px);
+    }
+    
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .login-link a {
+      color: var(--color-acento);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .requirements {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<header>PROTALENTIA</header>
+
+<nav>
+  <a href="index.html">Inicio</a>
+  <a href="diagnostico.html">Diagnóstico</a>
+  <a href="cursos.html">Cursos</a>
+  <a href="ofertas.html">Ofertas</a>
+</nav>
+
+<div class="registro-container">
+  <h2>Crea tu cuenta</h2>
+  <p>Regístrate para acceder a diagnósticos profesionales personalizados, cursos recomendados y ofertas laborales adaptadas a tu perfil.</p>
+  
+  <form id="registroForm">
+    <div class="form-group">
+      <label for="reg-username">Nombre de usuario</label>
+      <input type="text" id="reg-username" class="form-control" required>
+      <div class="requirements">Mínimo 4 caracteres, sin espacios</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="reg-password">Contraseña</label>
+      <input type="password" id="reg-password" class="form-control" required>
+      <div class="requirements">Mínimo 6 caracteres, debe incluir al menos una letra y un número</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="reg-confirm-password">Confirmar contraseña</label>
+      <input type="password" id="reg-confirm-password" class="form-control" required>
+    </div>
+    
+    <button type="submit" class="btn-registro">Crear cuenta</button>
+  </form>
+  
+  <div class="login-link">
+    ¿Ya tienes una cuenta? <a href="index.html">Inicia sesión aquí</a>
+  </div>
+</div>
+
+<!-- Añade esta línea antes de cualquier otro script -->
+<script src="netlify-config.js"></script>
+<script src="archivo.js"></script>
+
+</body>
+</html>
