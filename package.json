@@ -1,0 +1,8 @@
+{
+  "name": "protalentia",
+  "version": "1.0.0",
+  "description": "Sistema de diagnóstico profesional",
+  "dependencies": {
+    "openai": "^4.98.0"
+  }
+}
