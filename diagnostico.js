@@ -205,45 +205,61 @@ async function analizarRespuestas() {
     resultado.scrollIntoView({ behavior: "smooth" });
     
     // Intentar usar la API avanzada si está disponible
+   try {
+  // Obtener el token de autenticación
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error("No hay token disponible. Por favor inicia sesión.");
+  }
+  
+  // Añadir log detallado
+  console.log("Enviando respuestas a OpenAI:", respuestas);
+  
+  // IMPORTANTE: Cambiar la ruta para usar el redirect configurado
+  const response = await fetch('/api/analyze-responses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ responses: respuestas })
+  });
+  
+  // Añadir log de la respuesta
+  console.log("Respuesta de la API - status:", response.status);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`Error HTTP ${response.status}: ${errorText}`);
+    
     try {
-      // Obtener el token de autenticación
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error("No hay token disponible. Por favor inicia sesión.");
-      }
+      // Intentar parsear como JSON
+      const errorData = JSON.parse(errorText);
+      console.error("Error JSON en la respuesta:", errorData);
       
-      // Añadir log detallado
-      console.log("Enviando respuestas a OpenAI:", respuestas);
-      
-      // Enviar las respuestas al servidor para análisis con ChatGPT
-      const response = await fetch('/.netlify/functions/api-analyze-responses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ responses: respuestas })
-      });
-      
-      // Añadir log de la respuesta
-      console.log("Respuesta de la API - status:", response.status);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error en la respuesta:", errorData);
+      // Si es un error de OpenAI, mostrar mensaje amigable
+      if (errorData.errorCode === 'OPENAI_ERROR') {
+        console.warn("Usando método tradicional debido a error en OpenAI:", errorData.message);
         
-        // Si es un error de OpenAI, mostrar mensaje amigable
-        if (errorData.errorCode === 'OPENAI_ERROR') {
-          console.warn("Usando método tradicional debido a error en OpenAI:", errorData.message);
-          throw new Error("No se pudo usar el análisis avanzado. Utilizando el método tradicional...");
-        } else {
-          throw new Error(`Error en el análisis: ${errorData.message}`);
+        // Si hay una respuesta de fallback incluida, usarla
+        if (errorData.fallbackResponse) {
+          console.log("Usando respuesta de fallback proporcionada por el servidor");
+          return mostrarResultadosPersonalizados(errorData.fallbackResponse);
         }
+        
+        throw new Error("No se pudo usar el análisis avanzado. Utilizando el método tradicional...");
+      } else {
+        throw new Error(`Error en el análisis: ${errorData.message}`);
       }
-      
-      // Obtener y mostrar la respuesta completa como texto
-      const responseText = await response.text();
-      console.log("Respuesta completa de OpenAI (texto):", responseText);
+    } catch (parseError) {
+      console.error("Error al parsear la respuesta JSON:", parseError);
+      throw new Error(`Error ${response.status} en el análisis: respuesta no es JSON válido`);
+    }
+  }
+  
+  // Obtener la respuesta como texto
+  const responseText = await response.text();
+  console.log("Respuesta completa de OpenAI (texto):", responseText);
       
       try {
         // Intentar parsear como JSON

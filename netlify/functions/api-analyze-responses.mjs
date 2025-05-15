@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 
-export default async function handler(event, context) {
+// Cambiado de 'export default' a 'export const handler'
+export const handler = async function(event, context) {
   // Define los headers CORS
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -27,10 +28,12 @@ export default async function handler(event, context) {
   }
   
   try {
+    console.log("Recibiendo solicitud de análisis");
     const data = JSON.parse(event.body);
     
     // Verificar que haya respuestas para analizar
     if (!data.responses) {
+      console.log("Error: No se proporcionaron respuestas para analizar");
       return { 
         statusCode: 400,
         headers, 
@@ -43,13 +46,18 @@ export default async function handler(event, context) {
       // Inicializar cliente de OpenAI con la API key
       console.log("Intentando inicializar OpenAI...");
       const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY || 'clave_no_encontrada'
+        apiKey: process.env.OPENAI_API_KEY
       });
       
-      console.log("Valor de la variable de entorno (primeros caracteres):", 
-        process.env.OPENAI_API_KEY ? 
-        process.env.OPENAI_API_KEY.substring(0, 5) + "..." : 
-        "NO CONFIGURADA");
+      // Log para verificar la API key (solo primeros y últimos 4 caracteres por seguridad)
+      if (process.env.OPENAI_API_KEY) {
+        const key = process.env.OPENAI_API_KEY;
+        const maskedKey = key.substring(0, 4) + "..." + key.substring(key.length - 4);
+        console.log("API Key configurada:", maskedKey);
+      } else {
+        console.log("ERROR: API Key no encontrada");
+        throw new Error("API_KEY_MISSING");
+      }
       
       console.log("Enviando solicitud a OpenAI...");
       
@@ -83,6 +91,7 @@ export default async function handler(event, context) {
       
       // Extraer y validar la respuesta
       const result = JSON.parse(completion.choices[0].message.content);
+      console.log("Análisis completado exitosamente");
       
       return {
         statusCode: 200,
@@ -93,7 +102,6 @@ export default async function handler(event, context) {
       console.error("Error detallado con OpenAI:", 
         JSON.stringify({
           message: openaiError.message,
-          stack: openaiError.stack,
           name: openaiError.name
         })
       );
@@ -102,16 +110,20 @@ export default async function handler(event, context) {
       console.log("Usando respuesta de fallback debido a error de OpenAI");
       
       return {
-        statusCode: 200,
+        statusCode: 500,
         headers,
         body: JSON.stringify({
-          perfilLaboral: "Emprendedor",
-          porcentajeEmprendedor: 65,
-          porcentajeEmpleado: 35,
-          areasPrincipales: ["Tecnología y Programación", "Marketing y Ventas", "Diseño y Artes"],
-          habilidadesClave: ["Análisis y resolución de problemas", "Creatividad", "Comunicación", "Liderazgo", "Adaptabilidad"],
-          profesionRecomendada: "Desarrollador Full-Stack",
-          consejoPersonalizado: "Tu perfil muestra una clara inclinación hacia el emprendimiento tecnológico. Considera desarrollar tus habilidades en programación y marketing digital para crear proyectos propios."
+          errorCode: 'OPENAI_ERROR',
+          message: openaiError.message,
+          fallbackResponse: {
+            perfilLaboral: "Emprendedor",
+            porcentajeEmprendedor: 65,
+            porcentajeEmpleado: 35,
+            areasPrincipales: ["Tecnología y Programación", "Marketing y Ventas", "Diseño y Artes"],
+            habilidadesClave: ["Análisis y resolución de problemas", "Creatividad", "Comunicación", "Liderazgo", "Adaptabilidad"],
+            profesionRecomendada: "Desarrollador Full-Stack",
+            consejoPersonalizado: "Tu perfil muestra una clara inclinación hacia el emprendimiento tecnológico. Considera desarrollar tus habilidades en programación y marketing digital para crear proyectos propios."
+          }
         })
       };
     }
@@ -123,8 +135,9 @@ export default async function handler(event, context) {
       headers,
       body: JSON.stringify({ 
         message: 'Error en el análisis', 
-        errorCode: 'ANALISIS_ERROR'
+        errorCode: 'ANALISIS_ERROR',
+        details: error.message
       })
     };
   }
-}
+};
