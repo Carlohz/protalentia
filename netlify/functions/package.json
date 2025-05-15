@@ -1,7 +1,6 @@
 {
-  "name": "netlify-functions",
+  "name": "api-analyze-responses",
   "version": "1.0.0",
-  "description": "Funciones serverless para PROTALENTIA",
   "dependencies": {
     "openai": "^4.98.0"
   }
