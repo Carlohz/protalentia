@@ -40,10 +40,16 @@ exports.handler = async function(event, context) {
     
     // Intentar usar OpenAI
     try {
-      // Inicializar cliente de OpenAI con la API key de las variables de entorno de Netlify
-      const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
-      });
+   // Inicializar cliente de OpenAI con la API key
+   console.log("Intentando inicializar OpenAI...");
+   const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || 'clave_no_encontrada'
+   });
+  
+   console.log("Valor de la variable de entorno (primeros caracteres):", 
+    process.env.OPENAI_API_KEY ? 
+    process.env.OPENAI_API_KEY.substring(0, 5) + "..." : 
+    "NO CONFIGURADA");
       
       console.log("Enviando solicitud a OpenAI...");
       
@@ -83,8 +89,15 @@ exports.handler = async function(event, context) {
         headers,
         body: JSON.stringify(result)
       };
-    } catch (openaiError) {
-      console.error("Error con OpenAI:", openaiError);
+      
+     } catch (openaiError) {
+     console.error("Error detallado con OpenAI:", 
+      JSON.stringify({
+      message: openaiError.message,
+      stack: openaiError.stack,
+      name: openaiError.name
+      })
+     );
       
       // Si hay un error con OpenAI, usar respuesta de fallback
       console.log("Usando respuesta de fallback debido a error de OpenAI");
