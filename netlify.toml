@@ -9,7 +9,6 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["openai"]
   
   [functions.api-analyze-responses]
     timeout = 30
