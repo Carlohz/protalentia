@@ -1,13 +1,26 @@
-// Docs on request and context https://docs.netlify.com/functions/build/#code-your-function-2
-export default (request, context) => {
-  try {
-    const url = new URL(request.url)
-    const subject = url.searchParams.get('name') || 'World'
-
-    return new Response(`Hello ${subject}`)
-  } catch (error) {
-    return new Response(error.toString(), {
-      status: 500,
-    })
+export default async function handler(event, context) {
+  // Define los headers CORS
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Content-Type": "application/json"
+  };
+  
+  // Maneja las solicitudes OPTIONS (preflight)
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers,
+      body: ""
+    };
   }
+  
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({ 
+      status: 'ok', 
+      message: 'Servidor funcionando correctamente' 
+    })
+  };
 }
