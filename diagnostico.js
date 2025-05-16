@@ -531,28 +531,4 @@ function analizarAreasLaborales(respuestas, objetivo) {
     },
     
   };
-  
-  // El resto de la función queda igual
-  
-  // Esta es una versión simplificada. La función real mantendrá toda la lógica
-  // de asignación de puntos y cálculo de perfiles.
-  
-  // Solo para que este ejemplo funcione, retornamos un objeto con la estructura esperada
-  return {
-    areaPrincipal: "Tecnología y Programación",
-    subcategoriaFuerte: "Desarrollo de Software",
-    areasSecundarias: ["Marketing y Ventas", "Diseño y Artes"],
-    perfilLaboral: "Emprendedor",
-    puntosEmprendedor: 60,
-    puntosEmpleado: 40,
-    puntuacionesAreas: [
-      { nombre: "Tecnología y Programación", puntuacion: 25 },
-      { nombre: "Marketing y Ventas", puntuacion: 18 },
-      { nombre: "Diseño y Artes", puntuacion: 15 },
-      { nombre: "Finanzas y Contabilidad", puntuacion: 10 },
-      { nombre: "Recursos Humanos", puntuacion: 5 }
-    ],
-    habilidadesClave: ["Análisis y resolución de problemas", "Creatividad", "Comunicación", "Liderazgo", "Adaptabilidad"],
-    profesionRecomendada: "Desarrollador Full-Stack"
-  };
 }
