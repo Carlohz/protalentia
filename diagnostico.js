@@ -216,7 +216,7 @@ async function analizarRespuestas() {
   console.log("Enviando respuestas a OpenAI:", respuestas);
   
   // IMPORTANTE: Cambiar la ruta para usar el redirect configurado
-  const response = await fetch('/api/analyze-responses', {
+  const response = await fetch('/.netlify/functions/api-analyze-responses', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
